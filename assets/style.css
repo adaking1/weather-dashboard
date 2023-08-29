@@ -9,5 +9,12 @@ header {
 }
 
 #fiveDayForecast {
-    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#fiveDayForecast div {
+    border: 2px solid red;
+    width: 10%;
+    padding: 15px;
 }
