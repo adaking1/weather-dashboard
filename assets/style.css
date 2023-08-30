@@ -7,6 +7,31 @@ header {
     height: 85px;
     font-size: 50px;
 }
+aside {
+    float:left;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+h2 {
+    font-size: 30px;
+}
+
+h3 {
+    font-size: 25px;
+    width: 100%;
+    padding: 30px;
+}
+
+h4 {
+    font-size: 20px;
+}
+
+#currentWeather {
+    display: flex;
+    justify-content: center;
+}
 
 #fiveDayForecast {
     display: flex;
@@ -17,4 +42,14 @@ header {
     border: 2px solid red;
     width: 10%;
     padding: 15px;
+    margin: 10px;
+}
+
+#fiveDayForecast div li {
+    padding: 10px;
+}
+
+#historyList {
+    display: flex;
+    flex-direction:column-reverse;
 }

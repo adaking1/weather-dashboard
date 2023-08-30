@@ -15,25 +15,34 @@ function saveHistory(place) {
     // currently saving new york as New york
     // make two worded city's second word capitalized
     place = place[0].toUpperCase() + place.slice(1);
-    placeList = [place];
+    // placeList = [place];
     var storageList = JSON.parse(localStorage.getItem("search history"));
     if (storageList === null) {
-        localStorage.setItem("search history", JSON.stringify(placeList));
+        localStorage.setItem("search history", JSON.stringify(place));
     }
     else {
         console.log(storageList);
-        var storage = storageList.concat(placeList);
+        var storage = storageList + ", " + place
+        console.log(storage);
         localStorage.setItem("search history", JSON.stringify(storage));
     }
 }
 
 function showHistory() {
-    // need to render the storage list backwards as new searches are being added to the end
-    // might need to json.parse below to get the lists length
-    for (var i=0; i<localStorage.getItem("search history").length; i++) {
-        var history = document.createElement("li")
-        history.textContent = localStorage.getItem("search history")[i];
-        historyList.appendChild(history);
+    console.log(localStorage.getItem("search history") !== null);
+    if (localStorage.getItem("search history") !== null) {
+        var storageString = JSON.parse(localStorage.getItem("search history"));
+        var storageList = storageString.split(",");
+        console.log(typeof(storageString));
+        console.log(storageString);
+        console.log(storageList);
+        console.log(storageList.length);
+    
+        for (var i=0; i<storageList.length; i++) {
+            var history = document.createElement("li")
+            history.textContent = storageList[i];
+            historyList.appendChild(history);
+        }   
     }
 }
 
@@ -128,7 +137,7 @@ function citySearch () {
             var day = {temp: 0, wind: 0, humid: 0};
             var date = " ";
             var count = 0;
-
+            console.log(data);
             document.querySelector("#fiveDayTitle").textContent = "Five-Day Forecast:";
 
             for (var i=0; i<data.list.length; i++) { 
@@ -190,9 +199,16 @@ function citySearch () {
 
 }
 
+showHistory();
+
 searchButton.addEventListener("click", citySearch); 
 document.addEventListener("keypress", function(event){
     if (event.key === "Enter"){
         citySearch();
     }
 });
+
+
+// put weather icons using data.weather.main
+
+// if there is time, make a new html to handle 404 errors (when the user p uts in an invalid input into search)
