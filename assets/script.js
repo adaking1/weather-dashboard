@@ -14,32 +14,38 @@ var historyList = document.querySelector("#historyList");
 function saveHistory(place) {
     // currently saving new york as New york
     // make two worded city's second word capitalized
-    place = place[0].toUpperCase() + place.slice(1);
-    // placeList = [place];
+    // going to try text-teansform: capitalize in css
+    // place = place[0].toUpperCase() + place.slice(1);
+
     var storageList = JSON.parse(localStorage.getItem("search history"));
+    console.log(storageList);
     if (storageList === null) {
         localStorage.setItem("search history", JSON.stringify(place));
     }
     else {
-        console.log(storageList);
-        var storage = storageList + ", " + place
-        console.log(storage);
-        localStorage.setItem("search history", JSON.stringify(storage));
+        storageList = storageList.split(",");
+        console.log(storageList.length);
+        if (storageList.length > 7){
+            storageList.shift();
+            console.log(storageList);
+            localStorage.setItem("search history", JSON.stringify(storageList + ", " + place));
+        }
+        else {
+            console.log(storageList);
+            localStorage.setItem("search history", JSON.stringify(storageList + ", " + place));
+        }
     }
 }
 
 function showHistory() {
-    console.log(localStorage.getItem("search history") !== null);
     if (localStorage.getItem("search history") !== null) {
         var storageString = JSON.parse(localStorage.getItem("search history"));
-        var storageList = storageString.split(",");
-        console.log(typeof(storageString));
         console.log(storageString);
-        console.log(storageList);
-        console.log(storageList.length);
-    
+        var storageList = storageString.split(",");
+        // console.log(storageList);
+           
         for (var i=0; i<storageList.length; i++) {
-            var history = document.createElement("li")
+            var history = document.createElement("button");
             history.textContent = storageList[i];
             historyList.appendChild(history);
         }   
@@ -75,9 +81,134 @@ function getCurrentWeatherUrl(data) {
     return currentWeatherPrefix + "lat=" + lat + "&lon=" + lon + currentWeatherSuffix;
 }
 
+function currentDayBuild(data) {
+    if (currentWeather.children.length !== 0){
+        currentWeather.removeChild(currentWeather.lastChild);
+    }
+    
+        var div = document.createElement("div");
+        var currentWeatherTitle = document.createElement("h2");
+        var ul = document.createElement("ul");
+        var liTemp = document.createElement("li");
+        var liWind = document.createElement("li");
+        var liHumid = document.createElement("li");
+        var weatherIcon = document.createElement("li");
+
+        currentWeatherTitle.textContent = data.name + " (today)";
+
+        if (data.weather[0].main === "Clouds") {
+            weatherIcon.textContent = "\u2601";
+        }
+        else if (data.weather[0].main === "Rain") {
+            weatherIcon.textContent = "\uD83C\uDF27";
+        }
+        else if (data.weather[0].main === "Snow") {
+            weatherIcon.textContent = "\u2603";
+        }
+        else {
+            weatherIcon.textContent = "\uD83C\uDF1E";
+        }
+
+        liTemp.textContent = data.main.temp;
+        liWind.textContent = data.wind.speed + "mph";
+        liHumid.textContent = data.main.humidity + "%";
+
+        div.appendChild(currentWeatherTitle);
+        ul.appendChild(weatherIcon);
+        ul.appendChild(liTemp);
+        ul.appendChild(liWind);
+        ul.appendChild(liHumid);
+        div.appendChild(ul);
+        currentWeather.appendChild(div);
+        currentWeather.style.border = "2px solid red";
+
+
+        return currentWeather
+}
+
+
+function fiveDayBuild(data) {
+    var day = {temp: 0, wind: 0, humid: 0};
+    var date = " ";
+    var count = 0;
+
+    console.log(data);
+            
+    document.querySelector("#fiveDayTitle").textContent = "Five-Day Forecast:";
+
+    for (var i=0; i<data.list.length; i++) { 
+        if (date !== data.list[i].dt_txt.slice(0,10)){
+                    
+            var dateTitle = document.createElement("h4");
+            var weatherBox = document.createElement("div");
+            var weatherUl = document.createElement("ul");
+            var temperature = document.createElement("li");
+            var wind = document.createElement("li");
+            var humid = document.createElement("li");
+            var dayNumber = data.list[i].dt_txt.slice(8,10);
+            var month = data.list[i].dt_txt.slice(5,7);
+            var year = data.list[i].dt_txt.slice(0,4);
+            var weatherIcon = document.createElement("li");
+
+            dateTitle.textContent = month + "/" + dayNumber + "/" + year;
+            weatherBox.appendChild(dateTitle);
+
+            if (data.list[i].weather[0].main === "Clouds") {
+                weatherIcon.textContent = "\u2601";
+            }
+            else if (data.list[i].weather[0].main === "Rain") {
+                weatherIcon.textContent = "\uD83C\uDF27";
+            }
+            else if (data.list[i].weather[0].main === "Snow") {
+                weatherIcon.textContent = "\u2603";
+            }
+            else {
+                weatherIcon.textContent = "\uD83C\uDF1E";
+            }
+                    
+            // formats each 5-day weather box
+            weatherUl.appendChild(weatherIcon);
+            temperature.textContent = (day.temp/count).toFixed(2);
+            weatherUl.appendChild(temperature);
+            wind.textContent = (day.wind/count).toFixed(2) + "mph";
+            weatherUl.appendChild(wind);
+            humid.textContent = (day.humid/count).toFixed(2) + "%";
+            weatherUl.appendChild(humid);
+            weatherBox.appendChild(weatherUl);
+
+            // attaches the above elements to the actual document
+            fiveDayForecast.appendChild(weatherBox);
+
+
+            // keeps track of hourly weather to get daily averages
+            day.temp = data.list[i].main.temp;
+            day.wind = data.list[i].wind.speed;
+            day.humid = data.list[i].main.humidity;            
+            // this sets the date that is being compared
+            date = data.list[i].dt_txt.slice(0,10);
+            // this keeps track of the amount of hours provided by the api
+            // using count as denominator for temp averages using info above
+            count = 1;
+        }
+        else {
+            // this adds to the daily weather totals
+            day.temp += data.list[i].main.temp;
+            day.wind += data.list[i].wind.speed;
+            day.humid += data.list[i].main.humidity;
+            // this adds an index everytime an hour in the same day is recorded
+            count++;
+                    
+        }                
+    }
+    // this keeps the current day off the five day forecast
+    if (fiveDayForecast.children.length > 6){
+        fiveDayForecast.children[1].remove();
+    }
+    return fiveDayForecast;
+}
+
 
 function citySearch () {
-
     saveHistory(searchBar.value);
     while (fiveDayForecast.children[1]) {
         fiveDayForecast.removeChild(fiveDayForecast.lastChild);
@@ -93,106 +224,15 @@ function citySearch () {
             return response.json();
         })
         .then(function(data){
-            console.log(currentWeather.children);
-            if (currentWeather.children.length !== 0){
-                currentWeather.removeChild(currentWeather.lastChild);
-            }
-            
-                var div = document.createElement("div");
-                var currentWeatherTitle = document.createElement("h2");
-                var ul = document.createElement("ul");
-                var liTemp = document.createElement("li");
-                var liWind = document.createElement("li");
-                var liHumid = document.createElement("li");
-                console.log(data);
-                console.log(Date.UTC(data.dt));
-
-                currentWeatherTitle.textContent = data.name;
-                liTemp.textContent = data.main.temp;
-                liWind.textContent = data.wind.speed + "mph";
-                liHumid.textContent = data.main.humidity + "%";
-
-                div.appendChild(currentWeatherTitle);
-                ul.appendChild(liTemp);
-                ul.appendChild(liWind);
-                ul.appendChild(liHumid);
-                div.appendChild(ul);
-                currentWeather.appendChild(div);
-            
-            
+            currentDayBuild(data);
         })
-
-
-
-
-
-
-
-
+        
         fetch(getFiveDayUrl(data))
         .then(function(response){
             return response.json();
         })
         .then(function(data){
-            var day = {temp: 0, wind: 0, humid: 0};
-            var date = " ";
-            var count = 0;
-            console.log(data);
-            document.querySelector("#fiveDayTitle").textContent = "Five-Day Forecast:";
-
-            for (var i=0; i<data.list.length; i++) { 
-                if (date !== data.list[i].dt_txt.slice(0,10)){
-                    
-                    var dateTitle = document.createElement("h4");
-                    var weatherBox = document.createElement("div");
-                    var weatherUl = document.createElement("ul");
-                    var temperature = document.createElement("li");
-                    var wind = document.createElement("li");
-                    var humid = document.createElement("li");
-                    var monthDay = data.list[i].dt_txt.slice(5,10);
-                    var year = data.list[i].dt_txt.slice(0,4);
-
-
-                    dateTitle.textContent = monthDay + "/" + year;
-                    weatherBox.appendChild(dateTitle);
-                    
-                    // formats each 5-day weather box
-                    temperature.textContent = (day.temp/count).toFixed(2);
-                    weatherUl.appendChild(temperature);
-                    wind.textContent = (day.wind/count).toFixed(2) + "mph";
-                    weatherUl.appendChild(wind);
-                    humid.textContent = (day.humid/count).toFixed(2) + "%";
-                    weatherUl.appendChild(humid);
-                    weatherBox.appendChild(weatherUl);
-
-                    // attaches the above elements to the actual document
-                    fiveDayForecast.appendChild(weatherBox);
-
-
-                    // keeps track of hourly weather to get daily averages
-                    day.temp = data.list[i].main.temp;
-                    day.wind = data.list[i].wind.speed;
-                    day.humid = data.list[i].main.humidity;            
-                    // this sets the date that is being compared
-                    date = data.list[i].dt_txt.slice(0,10);
-                    // this keeps track of the amount of hours provided by the api
-                    // using count as denominator for temp averages using info above
-                    count = 1;
-                }
-                else {
-                    // this adds to the daily weather totals
-                    day.temp += data.list[i].main.temp;
-                    day.wind += data.list[i].wind.speed;
-                    day.humid += data.list[i].main.humidity;
-                    // this adds an index everytime an hour in the same day is recorded
-                    count++;
-                    
-                }                
-            }
-            // this keeps the current day off the five day forecast
-            if (fiveDayForecast.children.length > 6){
-                fiveDayForecast.children[1].remove();
-            }
+            fiveDayBuild(data);
         })
 
     })
@@ -208,7 +248,14 @@ document.addEventListener("keypress", function(event){
     }
 });
 
+historyList.addEventListener("click", function(event){
+    searchBar.value = event.target.textContent;
+    citySearch();
 
-// put weather icons using data.weather.main
+});
 
-// if there is time, make a new html to handle 404 errors (when the user p uts in an invalid input into search)
+
+// add degrees to all temps
+// fix local storage when i type in country code. Ex only au is showing up when i type in Perth, AU
+// style the whole page better and add media queries
+// if there is time, make a new html, or format page to handle 404 errors (when the user p uts in an invalid input into search)
