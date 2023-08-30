@@ -14,18 +14,24 @@ var historyList = document.querySelector("#historyList");
 function saveHistory(place) {
     // currently saving new york as New york
     // make two worded city's second word capitalized
-    // going to try text-teansform: capitalize in css
-    // place = place[0].toUpperCase() + place.slice(1);
+
 
     var storageList = JSON.parse(localStorage.getItem("search history"));
     console.log(storageList);
+
+    if (place.includes(",")) {
+        place = place.replace(", ", "-");
+        place = place.slice(0,-1) + place.slice(-1).toUpperCase();
+        console.log(place);
+    }
+
     if (storageList === null) {
         localStorage.setItem("search history", JSON.stringify(place));
     }
     else {
         storageList = storageList.split(",");
         console.log(storageList.length);
-        if (storageList.length > 7){
+        if (storageList.length > 5){
             storageList.shift();
             console.log(storageList);
             localStorage.setItem("search history", JSON.stringify(storageList + ", " + place));
@@ -46,7 +52,11 @@ function showHistory() {
            
         for (var i=0; i<storageList.length; i++) {
             var history = document.createElement("button");
-            history.textContent = storageList[i];
+            var place = storageList[i];
+            if (place.includes("-")) {
+                place = place.replace("-", ", ");
+            }
+            history.textContent = place;
             historyList.appendChild(history);
         }   
     }
@@ -109,9 +119,9 @@ function currentDayBuild(data) {
             weatherIcon.textContent = "\uD83C\uDF1E";
         }
 
-        liTemp.textContent = data.main.temp;
-        liWind.textContent = data.wind.speed + "mph";
-        liHumid.textContent = data.main.humidity + "%";
+        liTemp.textContent = "Temp: " + data.main.temp + "\u2109";
+        liWind.textContent = "Wind: " + data.wind.speed + "mph";
+        liHumid.textContent = "Humidity: " +data.main.humidity + "%";
 
         div.appendChild(currentWeatherTitle);
         ul.appendChild(weatherIcon);
@@ -168,11 +178,11 @@ function fiveDayBuild(data) {
                     
             // formats each 5-day weather box
             weatherUl.appendChild(weatherIcon);
-            temperature.textContent = (day.temp/count).toFixed(2);
+            temperature.textContent = "Temp: " + (day.temp/count).toFixed(2) + "\u2109";
             weatherUl.appendChild(temperature);
-            wind.textContent = (day.wind/count).toFixed(2) + "mph";
+            wind.textContent = "Wind: " + (day.wind/count).toFixed(2) + "mph";
             weatherUl.appendChild(wind);
-            humid.textContent = (day.humid/count).toFixed(2) + "%";
+            humid.textContent = "Humidity: " + (day.humid/count).toFixed(2) + "%";
             weatherUl.appendChild(humid);
             weatherBox.appendChild(weatherUl);
 
@@ -255,7 +265,8 @@ historyList.addEventListener("click", function(event){
 });
 
 
-// add degrees to all temps
-// fix local storage when i type in country code. Ex only au is showing up when i type in Perth, AU
+
+
+// add google fonts
 // style the whole page better and add media queries
 // if there is time, make a new html, or format page to handle 404 errors (when the user p uts in an invalid input into search)

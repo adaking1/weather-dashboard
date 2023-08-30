@@ -5,7 +5,7 @@ header {
     justify-content: center;
     align-items: center;
     height: 85px;
-    font-size: 50px;
+    font-size: 40px;
 }
 aside {
     float:left;
@@ -22,6 +22,7 @@ aside {
 #searchBar {
     padding: 5px;
     margin: 10px;
+    text-transform: capitalize;
 }
 
 #searchButton {
@@ -30,32 +31,36 @@ aside {
 }
 
 h2 {
-    font-size: 40px;
+    font-size: 30px;
 }
 
 h3 {
-    font-size: 30px;
+    font-size: 25px;
     width: 100%;
-    padding: 30px;
+    padding: 20px;
 }
 
 h4 {
-    font-size: 30px;
+    font-size: 22px;
 }
 
 #currentWeather {
     display: flex;
-    justify-content: center;
     margin: 5px;
+    justify-content: center;
+    padding: 5px;
 }
 
 #currentWeather li {
-    font-size: 30px;
+    font-size: 20px;
+    padding: 5px;
+    text-align: center;
 }
 
 #fiveDayForecast {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 #fiveDayForecast div {
@@ -63,14 +68,14 @@ h4 {
     border-radius: 5px;
     box-shadow: 5px 5px 5px grey;
     width: 14%;
-    padding: 15px;
-    margin: 10px;
+    padding: 10px 10px 20px 10px;
+    margin: 15px;
     background-color: lightcoral;
 }
 
 #fiveDayForecast div li {
-    padding: 10px;
-    font-size: 25px;
+    font-size: 20px;
+    padding-top: 10px;
 }
 
 #historyList {
@@ -86,6 +91,6 @@ h4 {
     padding: 10px;
     background-color: lightpink;
     border-radius: 5px;
-    margin: 8px;
+    margin: 6px;
     text-transform: capitalize;
 }
