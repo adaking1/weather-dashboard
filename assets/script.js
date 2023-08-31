@@ -119,7 +119,7 @@ function currentDayBuild(data) {
         ul.appendChild(liHumid);
         div.appendChild(ul);
         currentWeather.appendChild(div);
-        currentWeather.style.border = "2px solid red";
+        currentWeather.style.border = "2px solid maroon";
 
 
         return currentWeather

@@ -73,7 +73,7 @@ p {
 }
 
 #fiveDayForecast div {
-    border: 2px solid red;
+    border: 2px solid maroon;
     border-radius: 5px;
     box-shadow: 5px 5px 5px grey;
     width: 14%;
