@@ -1,7 +1,6 @@
 # weather-dashboard
 
-![image](https://github.com/adaking1/weather-dashboard/assets/137830553/ce454911-799d-4bfe-a275-d052c2815e64)
-
+![image](https://github.com/adaking1/weather-dashboard/assets/137830553/7dffd7b7-2438-4d68-aac2-1fc9e727174d)
 
 ## Link
 
