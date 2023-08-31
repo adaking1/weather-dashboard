@@ -12,10 +12,6 @@ var currentWeather = document.querySelector("#currentWeather");
 var historyList = document.querySelector("#historyList");
 
 function saveHistory(place) {
-    // currently saving new york as New york
-    // make two worded city's second word capitalized
-
-
     var storageList = JSON.parse(localStorage.getItem("search history"));
     console.log(storageList);
 
@@ -228,6 +224,13 @@ function citySearch () {
         return response.json();
     })
     .then(function(data){
+        console.log(data);
+        if (data.length === 0) {
+            var errorText = document.createElement("p");
+            errorText.textContent = "Please enter a valid city";
+            currentWeather.appendChild(errorText);
+            return
+        }
 
         fetch(getCurrentWeatherUrl(data))
         .then(function(response) {
@@ -267,6 +270,5 @@ historyList.addEventListener("click", function(event){
 
 
 
-// add google fonts
+
 // style the whole page better and add media queries
-// if there is time, make a new html, or format page to handle 404 errors (when the user p uts in an invalid input into search)

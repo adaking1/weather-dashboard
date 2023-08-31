@@ -1,3 +1,8 @@
+body, * {
+    font-family: 'Mukta', sans-serif;
+    /* font-family: 'Titillium Web', sans-serif; */
+}
+
 header {
     background-color: maroon;
     color: white;
@@ -42,6 +47,10 @@ h3 {
 
 h4 {
     font-size: 22px;
+}
+
+p {
+    font-size: 45px;
 }
 
 #currentWeather {
