@@ -200,7 +200,6 @@ function fiveDayBuild(data) {
             // this keeps track of the amount of timestamps per day provided by the api
             // using count as denominator for temp, wind, and humid averages using info above
             count = 1;
-            console.log(date);
         }
         else {
             // this adds to the daily weather totals
