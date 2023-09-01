@@ -3,15 +3,21 @@ var searchButton = document.querySelector("#searchButton");
 var fiveDayForecast = document.querySelector("#fiveDayForecast");
 var currentWeather = document.querySelector("#currentWeather");
 var historyList = document.querySelector("#historyList");
+var historyBtn = document.querySelector(".history");
 
+// this function records searched cities into local storage
+// it allows searches using city and country code ex. Paris, Fr
 function saveHistory(place) {
     var storageList = JSON.parse(localStorage.getItem("search history"));
-    console.log(storageList);
 
-    if (place.includes(",")) {
+    if (place.includes(", ")) {
         place = place.replace(", ", "-");
         place = place.slice(0,-1) + place.slice(-1).toUpperCase();
-        console.log(place);
+    }
+
+    if (place.includes(",")) {
+        place = place.replace(",", "-");
+        place = place.slice(0,-1) + place.slice(-1).toUpperCase();
     }
 
     if (storageList === null) {
@@ -19,25 +25,21 @@ function saveHistory(place) {
     }
     else {
         storageList = storageList.split(",");
-        console.log(storageList.length);
         if (storageList.length > 5){
             storageList.shift();
-            console.log(storageList);
             localStorage.setItem("search history", JSON.stringify(storageList + ", " + place));
         }
         else {
-            console.log(storageList);
             localStorage.setItem("search history", JSON.stringify(storageList + ", " + place));
         }
     }
 }
 
+// this function displays the names of the cities in the local storage as buttons and re-formats the name of the city and country code
 function showHistory() {
     if (localStorage.getItem("search history") !== null) {
         var storageString = JSON.parse(localStorage.getItem("search history"));
-        console.log(storageString);
         var storageList = storageString.split(",");
-        // console.log(storageList);
            
         for (var i=0; i<storageList.length; i++) {
             var history = document.createElement("button");
@@ -45,12 +47,19 @@ function showHistory() {
             if (place.includes("-")) {
                 place = place.replace("-", ", ");
             }
+            history.classList.add("history");
             history.textContent = place;
             historyList.appendChild(history);
+            history.addEventListener("click", function(event){
+                searchBar.value = event.target.textContent;
+                citySearch();
+            });
         }   
     }
+    
 }
 
+// this function returns the url for open weather's geo api that will return the latitude and longitude of the searched city
 function getGeoUrl(place) {
     var city = place.toLowerCase();
     var geoUrlPrefix = "https://api.openweathermap.org/geo/1.0/direct?q=";
@@ -64,6 +73,8 @@ function getGeoUrl(place) {
     return geoUrlPrefix + city + geoUrlSuffix;
 }
 
+// this function uses the latitude and longitude of the searched city that was returned from the geo api
+// it generates the url used to fetch the 5-day forecast from openweather api
 function getFiveDayUrl(data) {
     var weatherUrlPrefix = "https://api.openweathermap.org/data/2.5/forecast?";
     var weatherUrlSuffix = "&appid=3e1d2d78e1cc6cb9267d3e61fa4244d6&units=imperial";
@@ -72,6 +83,8 @@ function getFiveDayUrl(data) {
     return weatherUrlPrefix + "lat=" + lat + "&lon=" + lon + weatherUrlSuffix;
 }
 
+// this function also uses the lat and lon of the searched city provided by the geo api
+// it generates the url used to fetch the current weather data from the open weather api
 function getCurrentWeatherUrl(data) {
     var currentWeatherPrefix = "https://api.openweathermap.org/data/2.5/weather?";
     var currentWeatherSuffix = "&appid=3e1d2d78e1cc6cb9267d3e61fa4244d6&units=imperial";
@@ -80,11 +93,12 @@ function getCurrentWeatherUrl(data) {
     return currentWeatherPrefix + "lat=" + lat + "&lon=" + lon + currentWeatherSuffix;
 }
 
+// this function takes the data provided by the current weather api call and displays today's weather for the searched city on the page
 function currentDayBuild(data) {
     if (currentWeather.children.length !== 0){
         currentWeather.removeChild(currentWeather.lastChild);
     }
-    
+        
         var div = document.createElement("div");
         var currentWeatherTitle = document.createElement("h2");
         var ul = document.createElement("ul");
@@ -93,7 +107,7 @@ function currentDayBuild(data) {
         var liHumid = document.createElement("li");
         var weatherIcon = document.createElement("li");
 
-        currentWeatherTitle.textContent = data.name + " (today)";
+        currentWeatherTitle.textContent = data.name + dayjs().format(" (M/D/YYYY)");
 
         if (data.weather[0].main === "Clouds") {
             weatherIcon.textContent = "\u2601";
@@ -121,18 +135,16 @@ function currentDayBuild(data) {
         currentWeather.appendChild(div);
         currentWeather.style.border = "2px solid maroon";
 
-
         return currentWeather
+    
 }
 
-
+// this function uses the information provided by the 5-day forecast api call to display the forecast for the next five days for the searched city
 function fiveDayBuild(data) {
     var day = {temp: 0, wind: 0, humid: 0};
     var date = " ";
     var count = 0;
-
-    console.log(data);
-            
+    
     document.querySelector("#fiveDayTitle").textContent = "Five-Day Forecast:";
 
     for (var i=0; i<data.list.length; i++) { 
@@ -185,9 +197,10 @@ function fiveDayBuild(data) {
             day.humid = data.list[i].main.humidity;            
             // this sets the date that is being compared
             date = data.list[i].dt_txt.slice(0,10);
-            // this keeps track of the amount of hours provided by the api
-            // using count as denominator for temp averages using info above
+            // this keeps track of the amount of timestamps per day provided by the api
+            // using count as denominator for temp, wind, and humid averages using info above
             count = 1;
+            console.log(date);
         }
         else {
             // this adds to the daily weather totals
@@ -206,7 +219,8 @@ function fiveDayBuild(data) {
     return fiveDayForecast;
 }
 
-
+// this function uses all of the above functions to fetch info from the three different api urls and use them as needed
+// it also includes some error handling
 function citySearch () {
     saveHistory(searchBar.value);
     while (fiveDayForecast.children[1]) {
@@ -214,12 +228,15 @@ function citySearch () {
     }
     fetch(getGeoUrl(searchBar.value))
     .then(function(response){
-        return response.json();
+        if (response.status !== 200) {
+            location.reload();
+          }
+            return response.json();
     })
     .then(function(data){
-        console.log(data);
         if (data.length === 0) {
             var errorText = document.createElement("p");
+            currentWeather.removeChild(currentWeather.lastChild);
             errorText.textContent = "Please enter a valid city";
             currentWeather.appendChild(errorText);
             return
@@ -240,28 +257,26 @@ function citySearch () {
         .then(function(data){
             fiveDayBuild(data);
         })
-
     })
-
 }
 
+// this function calls when the page is loaded
+// it displays the last seven items in the search history
 showHistory();
 
+// this is the event listener for clicks on the search button
 searchButton.addEventListener("click", citySearch); 
+
+// this makes it so the enter key can be used to trigger the citySearch() function call
 document.addEventListener("keypress", function(event){
     if (event.key === "Enter"){
         citySearch();
     }
 });
 
-historyList.addEventListener("click", function(event){
-    searchBar.value = event.target.textContent;
-    citySearch();
-
-});
 
 
 
 
 
-// style the whole page better and add media queries
+

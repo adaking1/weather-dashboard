@@ -1,8 +1,10 @@
+/* this sets the font for the entire page */
 body, * {
     font-family: 'Mukta', sans-serif;
-    /* font-family: 'Titillium Web', sans-serif; */
+    
 }
 
+/* this styles the main title of the webpage */
 header {
     background-color: maroon;
     color: white;
@@ -12,6 +14,8 @@ header {
     height: 85px;
     font-size: 40px;
 }
+
+/* this styles the history list on the left side of the screen */
 aside {
     float:left;
     display: flex;
@@ -19,74 +23,26 @@ aside {
     height: 100%;
 }
 
+/* this styles the text that says "Search for a City:" */
 #searchLabel {
     font-size: 30px;
     padding: 5px;
 }
 
+/* this styles the search bar and the text that goes in it */
 #searchBar {
     padding: 5px;
     margin: 10px;
     text-transform: capitalize;
 }
 
+/* this styles the search button */
 #searchButton {
     padding: 5px;
     margin: 0 10px 10px 10px;
 }
 
-h2 {
-    font-size: 30px;
-}
-
-h3 {
-    font-size: 25px;
-    width: 100%;
-    padding: 20px;
-}
-
-h4 {
-    font-size: 22px;
-}
-
-p {
-    font-size: 45px;
-}
-
-#currentWeather {
-    display: flex;
-    margin: 5px;
-    justify-content: center;
-    padding: 5px;
-}
-
-#currentWeather li {
-    font-size: 20px;
-    padding: 5px;
-    text-align: center;
-}
-
-#fiveDayForecast {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-}
-
-#fiveDayForecast div {
-    border: 2px solid maroon;
-    border-radius: 5px;
-    box-shadow: 5px 5px 5px grey;
-    width: 14%;
-    padding: 10px 10px 20px 10px;
-    margin: 15px;
-    background-color: lightcoral;
-}
-
-#fiveDayForecast div li {
-    font-size: 20px;
-    padding-top: 10px;
-}
-
+/* this controls the style of the list of searched cities being displayed from local storage */
 #historyList {
     display: flex;
     flex-direction:column-reverse;
@@ -96,10 +52,106 @@ p {
     padding: 5px;
 }
 
+/* this controls the style of the individual items of the history list */
 #historyList button {
     padding: 10px;
     background-color: lightpink;
     border-radius: 5px;
     margin: 6px;
     text-transform: capitalize;
+}
+
+/* this styles the entire current weather container that is displayed after a search */
+#currentWeather {
+    display: flex;
+    margin: 5px;
+    justify-content: center;
+    padding: 5px;
+}
+
+/* this controls the style of the name of the city and the current date that is displayed after a search */
+h2 {
+    font-size: 30px;
+}
+
+/* this styles the temp, wind, and humidoty text for the current weather */
+#currentWeather li {
+    font-size: 20px;
+    padding: 5px;
+    text-align: center;
+}
+
+/* this styles the error message that displays on the screen in the current weather container when a user types in an invalid city */
+p {
+    font-size: 45px;
+}
+
+/* this styles the entire 5-day forecast container that displays after a search */
+#fiveDayForecast {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+/* this styles the text "Five-Day Forecast: */
+h3 {
+    font-size: 25px;
+    width: 100%;
+    padding: 20px;
+}
+
+/* this styles the containers that the 5-day forecast is in */
+#fiveDayForecast div {
+    border: 2px solid maroon;
+    border-radius: 5px;
+    box-shadow: 5px 5px 5px grey;
+    width: 14%;
+    padding: 10px 10px 20px 10px;
+    margin: 10px;
+    background-color: lightcoral;
+}
+
+/* this styles the dates inside each day of the five-day forecast */
+h4 {
+    font-size: 22px;
+    text-align: center;
+}
+
+/* this styles the weather info provided in the 5-day forecast containers */
+#fiveDayForecast div li {
+    font-size: 20px;
+    padding-top: 10px;
+}
+
+
+/* the media queries below allow the page to be readable and usable from different devices */
+
+@media screen and (max-width: 992px) {
+
+    h4 {
+        font-size: 18px;
+    }
+    #fiveDayForecast div {
+        margin: 0;
+    }
+
+    #fiveDayForecast div li {
+        font-size: 18px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+
+    aside {
+        width: 30%;
+    }
+
+    #fiveDayForecast div {
+        margin: 10px;
+        width: 50%;
+    }
+
+    #fiveDayForecast {
+        justify-content: center;
+    }
 }
