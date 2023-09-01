@@ -5,6 +5,7 @@ var currentWeather = document.querySelector("#currentWeather");
 var historyList = document.querySelector("#historyList");
 var historyBtn = document.querySelector(".history");
 
+
 // this function records searched cities into local storage
 // it allows searches using city and country code ex. Paris, Fr
 function saveHistory(place) {
@@ -107,7 +108,7 @@ function currentDayBuild(data) {
         var liHumid = document.createElement("li");
         var weatherIcon = document.createElement("li");
 
-        currentWeatherTitle.textContent = data.name + dayjs().format(" (M/D/YYYY)");
+        currentWeatherTitle.textContent = getCurrentDate(data);
 
         if (data.weather[0].main === "Clouds") {
             weatherIcon.textContent = "\u2601";
@@ -139,12 +140,24 @@ function currentDayBuild(data) {
     
 }
 
+// this function takes the unix timestamp provided by the current wearther api and converts it to the current date
+// it is called in the function above
+function getCurrentDate(data) {
+    var months = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
+    var unix = data.dt;
+    var dateToday = new Date(unix * 1000);
+    var utc = dateToday.toUTCString();
+    var monthString = utc.slice(8, 11);
+    var monthNum = months[monthString];
+    return data.name + " (" + monthNum + "/" + utc.slice(5,7) + "/" + utc.slice(12,16) + ")";
+}
+
 // this function uses the information provided by the 5-day forecast api call to display the forecast for the next five days for the searched city
 function fiveDayBuild(data) {
     var day = {temp: 0, wind: 0, humid: 0};
     var date = " ";
     var count = 0;
-    
+
     document.querySelector("#fiveDayTitle").textContent = "Five-Day Forecast:";
 
     for (var i=0; i<data.list.length; i++) { 
